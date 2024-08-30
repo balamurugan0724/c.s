@@ -3,11 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 def analyze_and_plot(data):
-  """
-  Performs statistical analysis and creates plots for a given dataset.
-  Args:
-    data: Pandas DataFrame containing the data.
-  """
   total_records = len(data)
   print("Total number of records:", total_records)
   for column in data.columns:
