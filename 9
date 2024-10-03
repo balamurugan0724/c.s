@@ -1,0 +1,12 @@
+import matplotlib.pyplot as plt
+
+product = ['computer', 'monitor', 'laptop', 'printer', 'tablet']
+quantity = [320, 450, 300, 120, 280]
+
+plt.figure(figsize=(10, 6))
+plt.barh(product, quantity, color='skyblue')
+plt.title('Product Quantity H-Plot')
+plt.xlabel('Quantity')
+plt.ylabel('Product')
+plt.grid(axis='x')
+plt.show()
