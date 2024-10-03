@@ -1,13 +1,50 @@
 import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
 from scipy.optimize import minimize
-def exponential_pdf(x, lam):
-  return lam * np.exp(-lam * x)
-def log_likelihood(lam, data):
-  return np.sum(np.log(exponential_pdf(data, lam)))
-def mle_exponential(data):
-  initial_guess = 1.0
-  result = minimize(lambda lam: -log_likelihood(lam, data), initial_guess)
-  return result.x[0]
-data = np.random.exponential(scale=2, size=100)
-estimated_lambda = mle_exponential(data)
-print(estimated_lambda)
+
+x = np.linspace(-10, 30, 100)
+e = np.random.normal(0, 5, 100)
+y = 10 + 4 * x + e
+
+data = pd.DataFrame({'X': x, 'Y': y})
+
+plt.figure(figsize=(10, 6))
+sns.regplot(x='X', y='Y', data=data, scatter_kws={'color': 'blue'}, line_kws={'color': 'red'})
+plt.title('Scatter Plot with Regression Line')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.show()
+
+x_ols = sm.add_constant(x)
+ols_model = sm.OLS(y, x_ols).fit()
+print("OLS Regression Results:\n", ols_model.summary())
+
+residuals = ols_model.resid
+sd_residuals = np.std(residuals)
+print(f"Standard Deviation of Residuals: {sd_residuals:.2f}")
+
+def negative_log_likelihood(params):
+    intercept, slope, sigma = params
+    if sigma <= 0:
+        return np.inf
+    y_pred = intercept + slope * x
+    return np.sum(np.log(sigma) + (residuals ** 2) / (2 * sigma ** 2))
+
+initial_params = [10, 4, 1]
+result = minimize(negative_log_likelihood, initial_params, method='L-BFGS-B')
+mle_params = result.x
+
+print("MLE Results:")
+print(f"Message: {result.message}")
+print(f"Success: {result.success}")
+print(f"Status: {result.status}")
+print(f"Function Value (fun): {result.fun}")
+print(f"Estimated Parameters (x): {mle_params}")
+print(f"Number of Iterations (nit): {result.nit}")
+print(f"Jacobian (jac): {result.jac}")
+print(f"Number of Function Evaluations (nfev): {result.nfev}")
+print(f"Number of Jacobian Evaluations (njev): {result.njev}")
+print(f"Hessian Inverse (hess_inv): {result.hess_inv}")
